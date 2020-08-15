@@ -6,12 +6,10 @@ public class FuelPile : MonoBehaviour {
 
     public GameObject coal;
     GameObject currentFuelPiece;
-    GameObject stove;
 
     public int fuelAmt;
 
     void Start() {
-        stove = GameObject.Find("Stove");
     }
 
     void FixedUpdate() {
@@ -23,12 +21,12 @@ public class FuelPile : MonoBehaviour {
             currentFuelPiece.transform.position = new Vector3(x, y, 0);
         }
     }
-
+    
     private void Update() {
         //Dropping fuel        
         if (Input.GetKeyUp(KeyCode.Mouse0) && GameManager.Instance.grabbingSomething) {                                    
-            if (stove.GetComponent<Stove>().fuelHoveringOnStove) {
-                stove.GetComponent<Stove>().AddFuel(50);
+            if (Stove.Instance.fuelHoveringOnStove) {
+                Stove.Instance.AddFuel(50);
             }
             else {
                 fuelAmt += 1;

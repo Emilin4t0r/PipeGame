@@ -3,46 +3,76 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Stove : MonoBehaviour {
+    public static Stove Instance;
 
-    public float stoveTemp;
-    public float targetTemp;
+    public float boilerWaterTemp;
+    public float targetBoilerWaterTemp;
     public float stoveCoolingSpeed;
     public float stoveWarmingSpeed;
     public bool stoveWarmingUp;
 
-    public float boilerAmt;
-    public bool boilerFillOn;
+    public float boilerWaterAmt;
+    public float boilerWaterUsageSpeed;
+    public bool boilerFillingUp;
+    public float boilerWaterFillingSpeed;
+    public bool boilerHasHotWater;
 
     public bool fuelHoveringOnStove;
 
     void Start() {
-        stoveTemp = 50f;
+        Instance = this;
+        boilerWaterTemp = 50f;
+        boilerWaterAmt = 50f;
+        boilerHasHotWater = true;
     }
 
     void FixedUpdate() {
-        if (targetTemp > stoveTemp && stoveWarmingUp) {
-            stoveTemp += stoveWarmingSpeed;
+        //water temperature changing
+        if (targetBoilerWaterTemp > boilerWaterTemp && stoveWarmingUp) {
+            boilerWaterTemp += stoveWarmingSpeed;
         }
-        else if (targetTemp < stoveTemp || !stoveWarmingUp) {
+        else if (targetBoilerWaterTemp < boilerWaterTemp || !stoveWarmingUp) {
             stoveWarmingUp = false;
-            stoveTemp -= stoveCoolingSpeed;
-            if (stoveTemp < 0)
-                stoveTemp = 0;           
+            boilerWaterTemp -= stoveCoolingSpeed;
+            if (boilerWaterTemp < 0) {
+                boilerWaterTemp = 0;
+                boilerHasHotWater = false;
+            }
+
         }
         if (!stoveWarmingUp) {
-            targetTemp = stoveTemp;
+            targetBoilerWaterTemp = boilerWaterTemp;
+        }
+
+        //water amount changing
+        if (boilerFillingUp) {
+            boilerWaterAmt += boilerWaterFillingSpeed;
+            if (boilerWaterAmt > 100) {
+                boilerWaterAmt = 100;
+            }
+        }
+        if (GameManager.Instance.hotOn) {
+            boilerWaterAmt -= boilerWaterUsageSpeed;
+            if (boilerWaterAmt < 0) {
+                boilerWaterAmt = 0;
+                boilerHasHotWater = false;
+            }
+            else if (boilerWaterAmt >= 0 && boilerFillingUp)
+                boilerHasHotWater = true; //boiler has water again if ran out completely
         }
     }
 
     public void AddFuel(float amt) {
-        if (targetTemp == 0)
-            targetTemp = stoveTemp;
+        //getting rid of initial "0" -value for target temp
+        if (targetBoilerWaterTemp == 0)
+            targetBoilerWaterTemp = boilerWaterTemp;
 
-        amt = ((100 - targetTemp) / 100) * amt;
-        targetTemp += amt;        
-        if (targetTemp > 100)
-            targetTemp = 100;
+        amt = ((100 - targetBoilerWaterTemp) / 100) * amt;
+        targetBoilerWaterTemp += amt;
+        if (targetBoilerWaterTemp > 100)
+            targetBoilerWaterTemp = 100;
         stoveWarmingUp = true;
+        boilerHasHotWater = true;  //water is hot again if heat ran out from stove completely
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
