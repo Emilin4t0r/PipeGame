@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour {
 
     GameObject stove;
 
-    void Start() {
+    void Awake() {
         Instance = this;
         hotOn = true;
         coldOn = true;

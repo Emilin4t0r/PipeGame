@@ -19,7 +19,7 @@ public class Stove : MonoBehaviour {
 
     public bool fuelHoveringOnStove;
 
-    void Start() {
+    void Awake() {
         Instance = this;
         boilerWaterTemp = 50f;
         boilerWaterAmt = 50f;
