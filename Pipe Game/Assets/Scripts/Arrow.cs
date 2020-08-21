@@ -15,9 +15,11 @@ public class Arrow : MonoBehaviour {
     }
 
     private void OnMouseEnter() {
-        toggler.SetActive(true);
+        if (!GameManager.Instance.grabbingSomething)
+            toggler.SetActive(true);
     }
     private void OnMouseExit() {
+        if (!GameManager.Instance.grabbingSomething)
         toggler.SetActive(false);
     }
     private void OnMouseDown() {
